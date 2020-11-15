@@ -39,11 +39,12 @@ module.exports.build = async (req, res, next) => {
     let imageContext = path.join(DOCKER_PATH, newImageId);
     let dockerfile = await fsPromises.readFile(path.join(DOCKER_PATH, 'Dockerfile'), 'utf8');
 
-    dockerfile = dockerfile.replace(/RUN_COMMAND/, 'npm i && npm build');
+    // dockerfile = dockerfile.replace(/RUN_COMMAND/, 'npm i && npm build');
+    // dockerfile = dockerfile.replace(/RUN_COMMAND/, 'npm i && npm build');
     dockerfile = dockerfile.replace(/REPO_TAG/, baseImage.imageRepoTags[0]);
     dockerfile = dockerfile.replace(/IMAGE_WORK_DIR/, baseImage.imageWorkDir);
     dockerfile = dockerfile.replace(/EXPOSE_PORT/, baseImage.imageExposedPort);
-    dockerfile = dockerfile.replace(/CMD_COMMAND/, '["npm", "start"]');
+    // dockerfile = dockerfile.replace(/CMD_COMMAND/, '["npm", "start"]');
 
     await fsPromises.writeFile(path.join(imageContext, 'Dockerfile'), dockerfile, 'utf8');
     // await tar.create({ file: 'Dockerfile.tar' }, [tarDockerfile]);
@@ -59,10 +60,10 @@ module.exports.build = async (req, res, next) => {
         docker.modem.followProgress(buildProgress, (error, result) => error ? reject(error) : resolve(result));
     });
 
-    // let image = Dockerode.Image.inspect({name: })
+    let image = new Dockerode.Image.inspect(docker.modem, dockerImageId);
 
+    req.apiData = image;
     req.apiError = null;
-    req.apiData = dockerImageId;
     req.apiStatus = 200;
     next();
 };
