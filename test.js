@@ -1,18 +1,21 @@
 const Dockerode = require('dockerode');
 
-const Image = require('../models/image');
+require('dotenv');
 
-const docker = new Dockerode({ host: process.env.DOCKER_HOST, port: process.env.DOCKER_PORT });
+require('./src/configs/sequelize').getSequelize().sync();
 
-module.exports.createService = async (req, res, next) => {
-    let { imageId, cpu, ram, storage, name } = req.body;
+const Image = require('./src/models/image');
+
+const docker = new Dockerode({ host: 'http://127.0.0.1', port: 2375 });
+
+(async () => {
     let volume = await docker.createVolume({
         Driver: 'local',
         DriverOpts: {}
     });
-    let image = await Image.findByPk(imageId);
-    
-    docker.createService({
+    let image = await Image.findByPk('cb1684b6-f548-4ed0-8e97-b120f9a967f5');
+
+    await docker.createService({
         Mode: {
             Replicated: {
                 Replicas: 1
@@ -39,14 +42,20 @@ module.exports.createService = async (req, res, next) => {
                         ReadOnly: false,
                         VolumeOptions: {
                             DriverConfig: {
-                                Name: 'cio',
+                                Name: 'local',
                                 Options: {}
                             }
                         }
                     }
                 ],
                 Image: image.imageRepoTags[0]
+            },
+            Resources: {
+                Limits: {
+                    NanoCPUs: 30_000_000,
+                    MemoryBytes: 1_000_000_000
+                }
             }
         }
     })
-};
+})();

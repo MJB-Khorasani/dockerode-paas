@@ -74,6 +74,7 @@ module.exports.build = async (req, res, next) => {
     newImage.imageEnv = inspectImage.ContainerConfig.Env;
     newImage.imageCmd = inspectImage.ContainerConfig.Cmd;
     newImage.imageWorkDir = inspectImage.ContainerConfig.WorkingDir;
+    newImage.ImageId = baseImageId;
     await newImage.save();
 
     req.apiData = newImageId;

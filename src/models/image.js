@@ -2,6 +2,8 @@ const { Model, DataTypes } = require('sequelize');
 
 const sequelize = require('../configs/sequelize');
 
+const Service = require('./service');
+
 class Image extends Model { };
 Image.init({
     id: {
@@ -25,5 +27,18 @@ Image.init({
     modelName: 'images',
     sequelize: sequelize.getSequelize()
 });
+
+// self refrencing
+Image.hasMany(Image, {
+    foreignKey: {
+        name: 'ImageId',
+        allowNull: true
+    }
+});
+
+// 1
+Image.hasOne(Service);
+// 1
+Service.belongsTo(Image);
 
 module.exports = Image;
