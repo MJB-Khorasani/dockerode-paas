@@ -7,6 +7,10 @@ const { middlewareHandler } = require('../utils/promise');
 router
     .route('/')
     .get(middlewareHandler(imageController.list))
+    .post(middlewareHandler(imageController.add));
+
+router
+    .route('/build')
     .post(middlewareHandler(imageController.build));
 
 router

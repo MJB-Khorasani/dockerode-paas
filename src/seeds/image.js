@@ -11,7 +11,7 @@ module.exports = async (Image) => {
             imageId: inspectImage.Id,
             imageRepoTags: inspectImage.RepoTags,
             imageRepoDigests: inspectImage.RepoDigests,
-            imageParentId: inspectImage.ParentId,
+            imageParentId: inspectImage.Parent,
             imageCreated: inspectImage.Created,
             imageContainer: inspectImage.Container,
             imageExposedPort: inspectImage.ContainerConfig.ExposedPorts ? Object.keys(inspectImage.ContainerConfig.ExposedPorts)[0].split('/')[0] : 0,
