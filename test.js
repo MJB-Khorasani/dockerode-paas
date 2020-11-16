@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const Dockerode = require('dockerode');
 
 require('dotenv');
@@ -14,6 +16,24 @@ const docker = new Dockerode({ host: 'http://127.0.0.1', port: 2375 });
         DriverOpts: {}
     });
     let image = await Image.findByPk('cb1684b6-f548-4ed0-8e97-b120f9a967f5');
+    let Env;
+
+    switch (image.imageRepoTags[0].split(':')[0]) {
+        case 'mysql':
+            Env = [
+                `MYSQL_ROOT_PASSWORD=${crypto.randomBytes(12).toString('hex')}`,
+                `MYSQL_DATABASE=${crypto.randomBytes(6).toString('hex')}`
+            ]
+            break;
+        case 'postgres':
+            Env = [
+                `POSTGRES_PASSWORD=${crypto.randomBytes(12).toString('hex')}`,
+                `POSTGRES_USER=root`,
+                `POSTGRES_DB=${crypto.randomBytes(6).toString('hex')}`
+            ]
+            break;
+        case 'mongo'
+    }
 
     await docker.createService({
         Mode: {
@@ -34,6 +54,7 @@ const docker = new Dockerode({ host: 'http://127.0.0.1', port: 2375 });
         TaskTemplate: {
             ContainerSpec: {
                 Hostname: name,
+                Env,
                 Mounts: [
                     {
                         Source: volume.name,
